@@ -1,0 +1,151 @@
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url("../img/A_beautiful_modern_website_background_featuring_an.webp")
+    no-repeat center center/cover;
+  overflow: hidden;
+  color: #f0f8ff;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 90%;
+  max-width: 500px;
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+h1 {
+  font-size: 2em;
+  color: #d1eaff;
+  margin-bottom: 20px;
+}
+
+.file-upload {
+  position: relative;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.file-upload input[type="file"] {
+  font-size: 1.2em;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+}
+
+.file-upload label {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1.2em;
+  background: linear-gradient(90deg, #6a5acd, #4682b4);
+  color: white;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  box-sizing: border-box;
+}
+
+.file-upload label:hover {
+  background: linear-gradient(90deg, #8470ff, #5f9ea0);
+  transform: translateY(-2px);
+}
+
+.file-upload label:active {
+  transform: translateY(0);
+}
+
+.file-name {
+  margin-top: 10px;
+  font-size: 1.2em;
+  color: #d1eaff;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #87cefa;
+  border-radius: 5px;
+  font-size: 1em;
+  background: rgba(255, 255, 255, 0.8);
+  color: #333;
+}
+
+button {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #fff;
+  background: linear-gradient(90deg, #6a5acd, #4682b4);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: linear-gradient(90deg, #8470ff, #5f9ea0);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+a {
+  display: block;
+  margin-top: 20px;
+  color: #87cefa;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #add8e6;
+}
+
+.progress-container {
+  width: 100%;
+  height: 20px;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  margin-top: 15px;
+  display: none;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #6a5acd;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

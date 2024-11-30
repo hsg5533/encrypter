@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일 암호화 및 복호화 도구</title>
+    <script src="./js/cryptojs.js"></script>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>파일 암호화 및 복호화</h1>
+      <div class="file-upload">
+        <label for="file-input">파일 선택</label>
+        <input type="file" id="file-input" />
+      </div>
+      <div id="file-name" class="file-name"></div>
+      <input type="text" id="key-input" placeholder="암호화 키 입력" />
+      <button type="button" id="encrypt-button">암호화</button>
+      <button type="button" id="decrypt-button">복호화</button>
+      <a id="download-link" class="hidden" download>파일 다운로드</a>
+
+      <!-- 프로그레스 바 -->
+      <div class="progress-container" id="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+  </body>
+</html>
