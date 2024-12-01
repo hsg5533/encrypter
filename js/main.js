@@ -7,21 +7,21 @@ function updateProgressBar(progress) {
 }
 
 // 파일을 청크 단위로 읽고 처리하는 함수
-function processChunks(reader, file, key, processChunkCallback, onComplete) {
+function processChunks(reader, file, processChunkCallback, onComplete) {
   const fileSize = file.size;
   let offset = 0;
 
   function readNextChunk() {
     const end = Math.min(offset + CHUNK_SIZE, fileSize);
     const chunk = file.slice(offset, end);
-    reader.readAsText(chunk); // 텍스트로 읽기
+    reader.readAsArrayBuffer(chunk); // 바이너리 데이터 읽기
   }
 
   reader.onload = function (e) {
     const chunkData = e.target.result;
     processChunkCallback(chunkData);
 
-    offset += chunkData.length;
+    offset += chunkData.byteLength;
     updateProgressBar((offset / fileSize) * 100); // 프로그레스 바 업데이트
 
     if (offset < fileSize) {
@@ -40,19 +40,19 @@ function encryptFile(file, key) {
   let encryptedData = [];
 
   function encryptChunk(chunk) {
-    const wordArray = CryptoJS.enc.Utf8.parse(chunk);
-    const encrypted = CryptoJS.AES.encrypt(wordArray, key).toString();
+    const wordArray = CryptoJS.lib.WordArray.create(new Uint8Array(chunk)); // 바이너리 데이터를 WordArray로 변환
+    const encrypted = CryptoJS.AES.encrypt(wordArray, key).toString(); // AES 암호화 후 Base64로 인코딩
     encryptedData.push(encrypted);
   }
 
   function onComplete() {
-    const encryptedBlob = new Blob([encryptedData.join("")], {
+    const encryptedBlob = new Blob([encryptedData.join("\n")], {
       type: "application/octet-stream",
     });
     createDownloadLink(encryptedBlob, `${file.name}.encrypted`);
   }
 
-  processChunks(reader, file, key, encryptChunk, onComplete);
+  processChunks(reader, file, encryptChunk, onComplete);
 }
 
 // 파일 복호화
@@ -62,31 +62,52 @@ function decryptFile(file, key) {
 
   function decryptChunk(chunk) {
     try {
-      // Base64 디코딩 후 복호화
-      const decrypted = CryptoJS.AES.decrypt(chunk, key).toString(
-        CryptoJS.enc.Utf8
-      );
-      if (decrypted) {
-        decryptedData.push(decrypted);
-      } else {
-        throw new Error("복호화 실패");
-      }
+      const encryptedText = new TextDecoder().decode(chunk); // 암호화된 텍스트 변환
+      const encryptedParts = encryptedText.split("\n"); // 줄 단위 분리
+
+      encryptedParts.forEach((part) => {
+        if (!part.trim()) return; // 빈 문자열 무시
+
+        const decryptedWordArray = CryptoJS.AES.decrypt(part, key); // AES 복호화
+        const decryptedBase64 =
+          CryptoJS.enc.Base64.stringify(decryptedWordArray); // Base64로 변환
+        const decryptedBytes = Uint8Array.from(atob(decryptedBase64), (c) =>
+          c.charCodeAt(0)
+        ); // Base64 디코딩 후 Uint8Array 변환
+
+        decryptedData.push(decryptedBytes);
+      });
     } catch (error) {
-      console.log(error);
-      alert("복호화 오류가 발생했습니다: " + error.message);
+      console.error("복호화 오류: ", error.message);
+      alert(
+        "복호화 중 오류가 발생했습니다. 파일이 손상되었거나 키가 잘못되었습니다."
+      );
+      throw error;
     }
   }
 
   function onComplete() {
-    const decryptedBlob = new Blob([decryptedData.join("")], {
-      type: "text/plain",
+    if (decryptedData.length === 0) {
+      alert("복호화된 데이터가 없습니다.");
+      return;
+    }
+
+    const mergedData = new Uint8Array(
+      decryptedData.reduce((acc, chunk) => acc + chunk.length, 0)
+    );
+    let offset = 0;
+
+    decryptedData.forEach((chunk) => {
+      mergedData.set(chunk, offset);
+      offset += chunk.length;
     });
-    // 원본 파일명에서 .encrypted 확장자만 제거
+
+    const blob = new Blob([mergedData], { type: file.type });
     const originalFileName = file.name.replace(/\.encrypted$/, "");
-    createDownloadLink(decryptedBlob, originalFileName);
+    createDownloadLink(blob, originalFileName);
   }
 
-  processChunks(reader, file, key, decryptChunk, onComplete);
+  processChunks(reader, file, decryptChunk, onComplete);
 }
 
 // 다운로드 링크 생성
